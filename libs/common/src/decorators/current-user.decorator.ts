@@ -1,5 +1,5 @@
 import { createParamDecorator, ExecutionContext } from "@nestjs/common";
-import { UserDocument } from "./users/models/user.schema";
+import { UserDocument } from "@app/common";
 
 const getCurrentUserByContext = (context: ExecutionContext): UserDocument => {
  // what is returned by verifyUser is automatically added to the request object (in this case user)
