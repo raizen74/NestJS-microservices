@@ -1,26 +1,32 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
-import { CreateChargeDto } from '../../../libs/common/src/dto/create-charge.dto';
+import { NOTIFICATIONS_SERVICE } from '@app/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { PaymentsCreateChargeDto } from './dto/payments-create-charge.dto';
 
 @Injectable()
 export class PaymentsService {
   private readonly stripe: Stripe;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    @Inject(NOTIFICATIONS_SERVICE)
+    private readonly notificationsService: ClientProxy,
+  ) {
     this.stripe = new Stripe(this.configService.get('STRIPE_SECRET_KEY')!);
   }
 
-  async createCharge({ card, amount }: CreateChargeDto) {
+  async createCharge({ card, amount, email }: PaymentsCreateChargeDto) {
     // const paymentMethod = await this.stripe.paymentMethods.create({
-      //   type: 'card',
-      //   card: {
-        //     number: card.number,
-        //     exp_month: card.exp_month,
-        //     exp_year: card.exp_year,
-        //     cvc: card.cvc,
-        //   },
-        // });
+    //   type: 'card',
+    //   card: {
+    //     number: card.number,
+    //     exp_month: card.exp_month,
+    //     exp_year: card.exp_year,
+    //     cvc: card.cvc,
+    //   },
+    // });
     // For testing only: create a paymentMethod from raw card data
     const paymentMethod = await this.stripe.paymentMethods.create({
       type: 'card',
@@ -34,6 +40,9 @@ export class PaymentsService {
       currency: 'eur',
     });
 
+    // reach the notifications.controller event pattern
+    this.notificationsService.emit('notify_email', { email })
+    
     return paymentIntent;
   }
 }

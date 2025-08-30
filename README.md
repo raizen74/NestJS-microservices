@@ -1,5 +1,21 @@
 # NestJS microservices booking system
 
+## Microservices
+
+- `auth` (External and Internal)
+  - `/users` controller with POST `createUser` and GET `getUser` (retrieves user data)
+  - `/auth` controller exposes `/auth/login` implementing `LocalAuthGuard` that returns JWT cookie to the caller
+  - Exposes internally `@MessagePattern('authenticate')` which is called by the common `JwtAuthGuard`, used by the `reservations` microservice to protect its public routes
+- `payments` (Internal)
+  - Exposes the `@MessagePattern('create_charge')` internally to the reservations microservice, which is called before executing the reservation, the `PaymentsService` calls the test **Stripe API** in the `createCharge` method
+- `reservations` (External)
+  - `/reservations` controller with POST `create` to create a reservation, protected by the common `JwtAuthGuard` Guard which calls the `auth` microservice which in turn implements `jwt.strategy.ts` to protect all routes
+  - The `ReservationsService` `create` method calls the `@MessagePattern('create_charge')` TCP listener of the `payments` microservice before persisting the reservation in the `ReservationsRepository`
+- `notifications` (Internal)
+  - Exposes and **event-pattern** `notify_email` from which the caller **does not wait for a response**, simply **receives an event and doesn't reply**. It doesn't mantain overhead by requiring a request-response channel. The `payments.service` emits an event to this microservice **after executing the Stripe API call**
+
+## Implementation
+
 `ReservationsRepository extends AbstractRepository<ReservationDocument>`
 
 Add GlobalPipes to add class validators to DTOs
@@ -14,4 +30,4 @@ Add class transformers to transform the received JSON value to Date in our DTOs
 
 Payments microservice listens `@MessagePattern` at `create_charge`
 
-Reservations microservice calls the payments.controller which in turn calls the Stripe API
+Reservations microservice calls the payments.controller which in turn calls the Stripe API and emits an event to the notifications microservice, passing the user email.
