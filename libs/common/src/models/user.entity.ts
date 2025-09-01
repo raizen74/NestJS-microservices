@@ -5,13 +5,13 @@ import { Role } from './role.entity';
 @Entity()
 export class User extends AbstractEntity<User> {
   @Column()
-  email: string;
+  declare email: string;
 
   @Column()
-  password: string;
+  declare password: string;
 
   // ManyToMany -> Many Users can have many Roles
   @ManyToMany(() => Role, { cascade: true })
   @JoinTable()
-  roles?: Role[];
+  declare roles?: Role[];
 }

@@ -1,4 +1,3 @@
-
 import {PrimaryGeneratedColumn} from 'typeorm';
 
 export class AbstractEntity<T> {
