@@ -4,13 +4,13 @@ import { Column, Entity } from 'typeorm';
 @Entity() // Creates a table based on this schema
 export class Reservation extends AbstractEntity<Reservation> {
   @Column()
-  timestamp: Date;
+  declare timestamp: Date;
   @Column()
-  startDate: Date;
+  declare startDate: Date;
   @Column()
-  endDate: Date;
+  declare endDate: Date;
   @Column()
-  userId: number;
+  declare userId: number;
   @Column()
-  invoiceId: string;
+  declare invoiceId: string;
 }
