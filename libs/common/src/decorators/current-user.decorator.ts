@@ -1,7 +1,7 @@
 import { createParamDecorator, ExecutionContext } from "@nestjs/common";
-import { UserDocument } from "@app/common";
+import { User } from "@app/common";
 
-const getCurrentUserByContext = (context: ExecutionContext): UserDocument => {
+const getCurrentUserByContext = (context: ExecutionContext): User => {
  // what is returned by verifyUser is automatically added to the request object (in this case user)
  // and is automatically accessible, so we can extract it
   return context.switchToHttp().getRequest().user;
