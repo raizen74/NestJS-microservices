@@ -3,7 +3,7 @@ import { NotifyEmailDto } from './dto/notify-email.dto';
 
 @Injectable()
 export class NotificationsService {
-  async notifyEmail(email: NotifyEmailDto) {
-    console.log(email)
+  async notifyEmail({email, text}: NotifyEmailDto) {
+    console.log(email, text)
   }
 }

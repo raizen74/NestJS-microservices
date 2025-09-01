@@ -1,5 +1,7 @@
 # NestJS microservices booking system
 
+!["NestJS logo"](nestJS.png)
+
 ## Microservices
 
 - `auth` (External and Internal)
@@ -31,3 +33,5 @@ Add class transformers to transform the received JSON value to Date in our DTOs
 Payments microservice listens `@MessagePattern` at `create_charge`
 
 Reservations microservice calls the payments.controller which in turn calls the Stripe API and emits an event to the notifications microservice, passing the user email.
+
+Role based access implemented in the `reservations.controller` **delete route**

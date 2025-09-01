@@ -41,7 +41,7 @@ export class PaymentsService {
     });
 
     // reach the notifications.controller event pattern
-    this.notificationsService.emit('notify_email', { email })
+    this.notificationsService.emit('notify_email', { email, text: `Your payment of amount $${amount} has completed successfully.`  })
     
     return paymentIntent;
   }
