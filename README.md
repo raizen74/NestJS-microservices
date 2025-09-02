@@ -37,3 +37,5 @@ Reservations microservice calls the payments.controller which in turn calls the 
 Role based access implemented in the `reservations.controller` **delete route**
 
 Swap persistence layer from **MongoDB + mongoose** to **MySQL + TypeORM** -> Branch `typeorm`
+
+Swap transport from TCP to **gRPC + Protocol Buffers**  --> Branch `grpc`

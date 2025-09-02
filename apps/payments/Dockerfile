@@ -24,5 +24,6 @@ COPY pnpm-lock.yaml .
 RUN npm install -g pnpm && pnpm install --prod
 
 COPY --from=development /usr/src/app/dist ./dist/
+COPY proto proto
 
 CMD ["node", "dist/apps/payments/main"]
