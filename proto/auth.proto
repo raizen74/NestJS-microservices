@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package auth;
+
+service AuthService {
+  rpc Authenticate (Authentication) returns (UserMessage) {}  // Methods of our AuthService
+}
+
+message Authentication {  // Type definition
+  string Authentication = 1; // properties in our method must be ordered
+}
+
+message UserMessage {  // Type definition
+  string id = 1;
+  string email = 2;
+  string password = 3;
+  repeated string roles = 4;
+}
