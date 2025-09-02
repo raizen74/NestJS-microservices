@@ -4,22 +4,28 @@ import {
   Inject,
   Injectable,
   Logger,
+  OnModuleInit,
   UnauthorizedException,
 } from '@nestjs/common';
-import { catchError, map, Observable, of, tap } from 'rxjs';
-import { AUTH_SERVICE } from '../constants/services';
-import { ClientProxy } from '@nestjs/microservices';
-import { UserDto } from '../dto';
 import { Reflector } from '@nestjs/core';
+import type { ClientGrpc } from '@nestjs/microservices';
+import { catchError, map, Observable, of, tap } from 'rxjs';
+import { AUTH_SERVICE_NAME, AuthServiceClient } from '../types';
 
 @Injectable()
-export class JwtAuthGuard implements CanActivate {
+export class JwtAuthGuard implements CanActivate, OnModuleInit {
   private readonly logger = new Logger(JwtAuthGuard.name);
-  // ClientProxy allow us to connect with other microservices via the provided transport layer
+  private authService: AuthServiceClient;
+
   constructor(
-    @Inject(AUTH_SERVICE) private readonly authClient: ClientProxy,
-    private readonly reflector: Reflector,
+    // Injection token
+    @Inject(AUTH_SERVICE_NAME) private readonly client: ClientGrpc,  // parameter property
+    private readonly reflector: Reflector,  // parameter property
   ) {}
+  // Set the service we want
+  onModuleInit() {
+    this.authService = this.client.getService<AuthServiceClient>(AUTH_SERVICE_NAME)
+  }
 
   canActivate(
     context: ExecutionContext,
@@ -34,8 +40,7 @@ export class JwtAuthGuard implements CanActivate {
     // Get the roles assigned to this route handler e.g. in reservations.controller @Roles
     const roles = this.reflector.get<string[]>('roles', context.getHandler());
 
-    return this.authClient
-      .send<UserDto>('authenticate', {
+    return this.authService.authenticate({  // Call gRPC authenticate method
         Authentication: jwt,
       }) // receives the user
       .pipe(
@@ -48,7 +53,10 @@ export class JwtAuthGuard implements CanActivate {
               }
             }
           }
-          context.switchToHttp().getRequest().user = res;
+          context.switchToHttp().getRequest().user = {
+            ...res,
+            _id: res.id, // gRPC cannot use _
+          };
         }),
         map(() => true), // can pass
         catchError((err) => {
