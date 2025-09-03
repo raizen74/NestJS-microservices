@@ -11,10 +11,11 @@ async function bootstrap() {
     transport: Transport.TCP,
     options: {
       host: '0.0.0.0',
-      port: configService.get('PORT'),
+      port: configService.get('PORT_TCP'),
     }
   })
   app.useLogger(app.get(Logger)); // make payments app use the pino-logger
   await app.startAllMicroservices();
+  await app.listen(configService.getOrThrow('PORT_HTTP'))  // listen on a port for so graphql gateway can reach it
 }
 bootstrap();
