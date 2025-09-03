@@ -1,4 +1,9 @@
-import { DatabaseModule, LoggerModule, AUTH_SERVICE, PAYMENTS_SERVICE } from '@app/common';
+import {
+  DatabaseModule,
+  LoggerModule,
+  AUTH_SERVICE,
+  PAYMENTS_SERVICE,
+} from '@app/common';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
@@ -10,9 +15,19 @@ import { ReservationsController } from './reservations.controller';
 import { ReservationsRepository } from './reservations.repository';
 import { ReservationsService } from './reservations.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo';
+import { ReservationsResolver } from './reservations.resolver';
 
 @Module({
   imports: [
+    GraphQLModule.forRoot<ApolloFederationDriverConfig>({
+      driver: ApolloFederationDriver,
+      // AutoSchema generation from code
+      autoSchemaFile: {
+        federation: 2
+      }
+    }),
     DatabaseModule,
     DatabaseModule.forFeature([
       {
@@ -40,10 +55,10 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
           options: {
             host: configService.get('AUTH_HOST'),
             port: configService.get('AUTH_PORT'),
-          }
+          },
         }),
-        inject: [ConfigService]
-      }
+        inject: [ConfigService],
+      },
     ]),
     ClientsModule.registerAsync([
       {
@@ -53,13 +68,13 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
           options: {
             host: configService.get('PAYMENTS_HOST'),
             port: configService.get('PAYMENTS_PORT'),
-          }
+          },
         }),
-        inject: [ConfigService]
-      }
+        inject: [ConfigService],
+      },
     ]),
   ],
   controllers: [ReservationsController],
-  providers: [ReservationsService, ReservationsRepository],
+  providers: [ReservationsService, ReservationsRepository, ReservationsResolver],
 })
 export class ReservationsModule {}
