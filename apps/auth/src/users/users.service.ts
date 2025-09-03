@@ -1,5 +1,9 @@
-import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
-import * as bcrypt from "bcryptjs"
+import {
+  Injectable,
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersRepository } from './users.repository';
 import { GetUserDto } from './dto/get-user.dto';
@@ -7,37 +11,43 @@ import { GetUserDto } from './dto/get-user.dto';
 @Injectable()
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
-  
+
   async create(createUserDto: CreateUserDto) {
-    await this.validateCreateUserDto(createUserDto)  // check if the user exists
-    console.log('User created')
+    await this.validateCreateUserDto(createUserDto); // check if the user exists
+    console.log('User created');
     return this.usersRepository.create({
       ...createUserDto,
-      password: await bcrypt.hash(createUserDto.password, 10)
+      password: await bcrypt.hash(createUserDto.password, 10),
     });
   }
 
   private async validateCreateUserDto(createUserDto: CreateUserDto) {
     try {
-      const user = await this.usersRepository.findOne({email: createUserDto.email})
-    } catch (err) {   // If the user DO NOT exist, return 
-      console.log(err)
+      const user = await this.usersRepository.findOne({
+        email: createUserDto.email,
+      });
+    } catch (err) {
+      // If the user DO NOT exist, return
+      console.log(err);
       return;
     }
     throw new UnprocessableEntityException('Email already exists.');
   }
 
   async verifyUser(email: string, password: string) {
-    const user = await this.usersRepository.findOne({email})
-    const passwordIsValid = await bcrypt.compare(password, user.password)
+    const user = await this.usersRepository.findOne({ email });
+    const passwordIsValid = await bcrypt.compare(password, user.password);
     if (!passwordIsValid) {
-      throw new UnauthorizedException('Credentials are not valid.')
+      throw new UnauthorizedException('Credentials are not valid.');
     }
     return user;
   }
 
   async getUser(getUserDto: GetUserDto) {
-    return this.usersRepository.findOne(getUserDto)
+    return this.usersRepository.findOne(getUserDto);
   }
 
+  async findAll() {
+    return this.usersRepository.find({});
+  }
 }
