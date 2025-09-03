@@ -35,3 +35,7 @@ Payments microservice listens `@MessagePattern` at `create_charge`
 Reservations microservice calls the payments.controller which in turn calls the Stripe API and emits an event to the notifications microservice, passing the user email.
 
 Role based access implemented in the `reservations.controller` **delete route**
+
+Swap persistence layer from **MongoDB + mongoose** to **MySQL + TypeORM** -> Branch `typeorm`
+
+Swap transport from TCP to **gRPC + Protocol Buffers**  --> Branch `grpc`
