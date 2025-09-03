@@ -39,3 +39,5 @@ Role based access implemented in the `reservations.controller` **delete route**
 Swap persistence layer from **MongoDB + mongoose** to **MySQL + TypeORM** -> Branch `typeorm`
 
 Swap transport from TCP to **gRPC + Protocol Buffers**  --> Branch `grpc`
+
+**Apollo GraphQL gateway** calls the AUTH microservice passing the Authentication header with the JWT, grabs the returned user and injects it as user header in each graphQL request

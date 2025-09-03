@@ -20,9 +20,9 @@
     "test:e2e": "jest --config ./apps/sleepr/test/jest-e2e.json"
   },
   "dependencies": {
-    "@apollo/gateway": "^2.11.2",
-    "@apollo/server": "^5.0.0",
-    "@apollo/subgraph": "^2.11.2",
+    "@apollo/gateway": "^2",
+    "@apollo/server": "^4.12.2",
+    "@apollo/subgraph": "^2",
     "@nestjs/apollo": "^13.1.0",
     "@nestjs/common": "11.1.6",
     "@nestjs/config": "^4.0.2",
