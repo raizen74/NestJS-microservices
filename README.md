@@ -16,6 +16,29 @@
 - `notifications` (Internal)
   - Exposes and **event-pattern** `notify_email` from which the caller **does not wait for a response**, simply **receives an event and doesn't reply**. It doesn't mantain overhead by requiring a request-response channel. The `payments.service` emits an event to this microservice **after executing the Stripe API call**
 
+## Branches
+
+`main`:
+
+- Persistence layer: **MongoDB + moongose ORM**
+- Microservices communication: **TCP**
+
+`typeorm`:
+
+- Swap the persistence layer to **MySQL + TypeORM** seamlessly thanks to the `AbstractRepository` pattern
+
+`grpc`
+
+- Swap Microservices transport from TCP to **gRPC + Protocol Buffers**
+
+`graphql`
+
+- Apollo federation with **Gateway module** which exposes 3 GraphQL resolvers as subgraphs: **reservations**, **users** and **payments resolvers**. Access it via Apollo playground on `localhost:3004/graphql`
+
+`prisma`
+
+- Swap the persistence layer of the `auth` and `reservations` microservices to PostgreSQL and **Prisma refactor** to use prisma types to perform database operations
+
 ## Implementation
 
 `ReservationsRepository extends AbstractRepository<ReservationDocument>`
@@ -35,3 +58,9 @@ Payments microservice listens `@MessagePattern` at `create_charge`
 Reservations microservice calls the payments.controller which in turn calls the Stripe API and emits an event to the notifications microservice, passing the user email.
 
 Role based access implemented in the `reservations.controller` **delete route**
+
+Swap persistence layer from **MongoDB + mongoose** to **MySQL + TypeORM** -> Branch `typeorm`
+
+Swap transport from TCP to **gRPC + Protocol Buffers**  --> Branch `grpc`
+
+**Apollo GraphQL gateway** calls the AUTH microservice passing the Authentication header with the JWT, grabs the returned user and injects it as user header in each graphQL request. The gateway communicates via http with the 3 GraphQL resolvers (subgraphs defined in `gateway.module.ts`)
