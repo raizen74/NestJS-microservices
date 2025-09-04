@@ -4,8 +4,10 @@ WORKDIR /usr/src/app
 
 COPY package.json .
 COPY pnpm-lock.yaml .
+# Copy the prisma schema to regenerate it
+COPY apps/reservations/prisma ./prisma
 
-RUN npm install -g pnpm && pnpm install
+RUN npm install -g pnpm && pnpm install && pnpm prisma generate
 
 COPY . .
 
@@ -25,4 +27,4 @@ RUN npm install -g pnpm && pnpm install --prod
 
 COPY --from=development /usr/src/app/dist ./dist/
 
-CMD ["node", "dist/apps/reservations/main"]
+CMD ["pnpm", "run", "start:prod", "dist/apps/reservations/main"]
