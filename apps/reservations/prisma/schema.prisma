@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client-js"
+  output = "../node_modules/.prisma/client"  // where to generate the prisma client types
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+// Table that maps to a TypeScript type
+model Reservation {
+  id Int @default(autoincrement()) @id  // mark it as primary key
+  timestamp DateTime
+  startDate DateTime
+  endDate DateTime
+  userId Int
+  invoiceId String
+}
