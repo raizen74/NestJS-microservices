@@ -17,6 +17,7 @@ export class AuthController {
     @CurrentUser() user: User,
     @Res({passthrough: true}) response: Response // passthrough: true -> response is sent manually within the route handler
   ) {
+    console.log('login')
     // modifies the response object, injecting the JWT
     await this.authService.login(user, response)
     response.send(user);  // send the response back on the response object

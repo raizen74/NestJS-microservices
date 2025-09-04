@@ -35,6 +35,10 @@
 
 - Apollo federation with **Gateway module** which exposes 3 GraphQL resolvers as subgraphs: **reservations**, **users** and **payments resolvers**. Access it via Apollo playground on `localhost:3004/graphql`
 
+`prisma`
+
+- Swap the persistence layer of the `auth` and `reservations` microservices to PostgreSQL and **Prisma refactor** to use prisma types to perform database operations
+
 ## Implementation
 
 `ReservationsRepository extends AbstractRepository<ReservationDocument>`
