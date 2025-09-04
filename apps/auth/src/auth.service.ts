@@ -1,30 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { UserDocument } from '@app/common';
+import type { User } from '.prisma/client';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { TokenPayload } from './interfaces/token-payload.interface';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly configService: ConfigService, private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   // user and response are obtained from the decorators
-  async login(user: UserDocument, response: Response) {
-    const tokenPayload = {
-      userId: user._id.toHexString()
-    }
+  async login(user: User, response: Response) {
+    const tokenPayload: TokenPayload = {
+      userId: user.id,
+    };
 
-    const expires = new Date()
+    const expires = new Date();
     expires.setSeconds(
-      expires.getSeconds() + this.configService.get('JWT_EXPIRATION')
-    )
+      expires.getSeconds() + this.configService.get('JWT_EXPIRATION'),
+    );
 
-    const token = this.jwtService.sign(tokenPayload)
+    const token = this.jwtService.sign(tokenPayload);
 
     response.cookie('Authentication', token, {
       httpOnly: true, // only available for http requests, not for client-side javascript
-      expires
-    })
+      expires,
+    });
   }
-
 }
